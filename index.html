@@ -5,90 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>My Portfolio</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
-    body { line-height: 1.6; background: #f9f9f9; color: #333; }
+    body { font-family: Arial; background: #f9f9f9; color: #333; margin:0; padding:0; }
     header { background: #4a90e2; color: #fff; padding: 1rem; text-align: center; }
-    nav a { color: #fff; margin: 0 1rem; text-decoration: none; font-weight: bold; }
     section { padding: 2rem; max-width: 900px; margin: auto; }
-    h1, h2 { margin-bottom: 1rem; }
-    .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; }
-    .card { background: #fff; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    footer { background: #333; color: #fff; text-align: center; padding: 1rem; margin-top: 2rem; }
     form { display: flex; flex-direction: column; gap: 0.5rem; max-width: 400px; }
     input, textarea, button { padding: 0.5rem; border-radius: 5px; border: 1px solid #ccc; }
-    button { background: #4a90e2; color: #fff; border: none; cursor: pointer; font-weight: bold; }
+    button { background: #4a90e2; color: #fff; border: none; cursor: pointer; }
     button:hover { background: #357abd; }
   </style>
-
-  <!-- Firebase SDKs -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getFirestore, collection, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-    // Your Firebase config
-    const firebaseConfig = {
-      apiKey: "AIzaSyAc3N03EXDPtuQJe_FwtMQLfY_ES6TQpe8",
-      authDomain: "port-31b54.firebaseapp.com",
-      projectId: "port-31b54",
-      storageBucket: "port-31b54.firebasestorage.app",
-      messagingSenderId: "96039845108",
-      appId: "1:96039845108:web:b52125e3f3ebb578f372a1"
-    };
-
-    // Initialize Firebase
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    // Handle form submission
-    window.addEventListener("DOMContentLoaded", () => {
-      const contactForm = document.getElementById("contactForm");
-      contactForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-
-        const name = document.getElementById("name").value;
-        const email = document.getElementById("email").value;
-        const message = document.getElementById("message").value;
-
-        try {
-          await addDoc(collection(db, "messages"), {
-            name,
-            email,
-            message,
-            timestamp: new Date()
-          });
-          alert("✅ Message sent successfully!");
-          contactForm.reset();
-        } catch (error) {
-          console.error("❌ Error adding document: ", error);
-          alert("Error sending message. Check console for details.");
-        }
-      });
-    });
-  </script>
 </head>
 <body>
   <header>
     <h1>My Portfolio</h1>
-    <nav>
-      <a href="#about">About</a>
-      <a href="#projects">Projects</a>
-      <a href="#contact">Contact</a>
-    </nav>
   </header>
-
-  <section id="about">
-    <h2>About Me</h2>
-    <p>Hello! I'm [Your Name], a [Your Role, e.g., web developer/designer]. This is my personal portfolio where I showcase my projects and skills.</p>
-  </section>
-
-  <section id="projects">
-    <h2>Projects</h2>
-    <div class="projects">
-      <div class="card"><h3>Project One</h3><p>Project description here.</p></div>
-      <div class="card"><h3>Project Two</h3><p>Project description here.</p></div>
-      <div class="card"><h3>Project Three</h3><p>Project description here.</p></div>
-    </div>
-  </section>
 
   <section id="contact">
     <h2>Contact Me</h2>
@@ -100,8 +29,34 @@
     </form>
   </section>
 
-  <footer>
-    <p>&copy; 2025 Your Name. All Rights Reserved.</p>
-  </footer>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+    // Your Supabase project info
+    const SUPABASE_URL = "https://urmgxaycjivcyzcksroq.supabase.co";
+    const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybWd4YXljaml2Y3l6Y2tzcm9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzOTM1MjcsImV4cCI6MjA3MTk2OTUyN30.c3gSAjTuUt0EjEM_b4jS0NzWQtm9BtTZTNrd4iD5nFg";
+
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    const form = document.getElementById('contactForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('name').value;
+      const email = document.getElementById('email').value;
+      const message = document.getElementById('message').value;
+
+      const { data, error } = await supabase
+        .from('messages')
+        .insert([{ name, email, message }]);
+
+      if (error) {
+        console.error(error);
+        alert("❌ Failed to send message");
+      } else {
+        alert("✅ Message sent successfully!");
+        form.reset();
+      }
+    });
+  </script>
 </body>
 </html>
