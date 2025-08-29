@@ -32,30 +32,39 @@
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    // Your Supabase project info
+    // Replace with your Supabase project info
     const SUPABASE_URL = "https://urmgxaycjivcyzcksroq.supabase.co";
     const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVybWd4YXljaml2Y3l6Y2tzcm9xIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTYzOTM1MjcsImV4cCI6MjA3MTk2OTUyN30.c3gSAjTuUt0EjEM_b4jS0NzWQtm9BtTZTNrd4iD5nFg";
 
     const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    const form = document.getElementById('contactForm');
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('name').value;
-      const email = document.getElementById('email').value;
-      const message = document.getElementById('message').value;
+    window.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("contactForm");
 
-      const { data, error } = await supabase
-        .from('messages')
-        .insert([{ name, email, message }]);
+      form.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-      if (error) {
-        console.error(error);
-        alert("❌ Failed to send message");
-      } else {
-        alert("✅ Message sent successfully!");
-        form.reset();
-      }
+        const name = document.getElementById("name").value;
+        const email = document.getElementById("email").value;
+        const message = document.getElementById("message").value;
+
+        try {
+          const { data, error } = await supabase
+            .from("messages")
+            .insert([{ name, email, message }]);
+
+          if (error) {
+            console.error("Error sending message:", error);
+            alert("❌ Failed to send message. Check console.");
+          } else {
+            alert("✅ Message sent successfully!");
+            form.reset();
+          }
+        } catch (err) {
+          console.error("Unexpected error:", err);
+          alert("❌ Unexpected error occurred.");
+        }
+      });
     });
   </script>
 </body>
